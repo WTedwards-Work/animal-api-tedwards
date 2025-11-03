@@ -39,6 +39,12 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
+    <!-- FreeMarker Template Engine --> 
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-freemarker</artifactId>
+    </dependency>
+
     <!-- PostgreSQL JDBC driver -->
     <dependency>
       <groupId>org.postgresql</groupId>
