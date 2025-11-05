@@ -8,8 +8,26 @@
 </head>
 <body class="container py-4">
 
+  <!-- ✅ NAVBAR (consistent across templates) -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top mb-4">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/cats">Big Cat Gallery</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/cats">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/cats/new">Add Cat</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Edit Big Cat <small class="text-muted">#${animal.bigCatId}</small></h1>
+    <h1 class="mb-0">
+      Edit Big Cat <small class="text-muted">#${animal.bigCatId}</small>
+    </h1>
     <div class="d-flex gap-2">
       <a class="btn btn-outline-secondary" href="/cats/${animal.bigCatId}">Back to Details</a>
       <a class="btn btn-outline-secondary" href="/cats">Back to List</a>
@@ -77,5 +95,6 @@
     </div>
   </form>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
