@@ -1,75 +1,169 @@
-// js/search.js
+// ======= CONFIG =======
+const API_BASE = "/api/bigcats";
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('search.js loaded'); // debug
+// ======= STATE =======
+let animalsCache = [];
 
-  const input   = document.getElementById('searchInput');
-  const button  = document.getElementById('searchBtn');
-  const grid    = document.getElementById('animalGrid');
-  const empty   = document.getElementById('noResults');
-  const cards   = grid ? Array.from(grid.getElementsByClassName('animal-card')) : [];
+// ======= UTIL =======
+const byId = (id) => document.getElementById(id);
+function showAlert(message, type = "success", mountId = "alertArea") {
+  const mount = byId(mountId);
+  if (!mount) return;
+  mount.innerHTML = `
+    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>`;
+}
+// Simple HTML escape
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+function debounce(fn, ms = 200) { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
 
-  const norm = (s) => (s || '').toLowerCase().trim();
+// ======= INDEX: load & render =======
+async function loadAnimals() {
+  try {
+    const res = await fetch(API_BASE);
+    if (!res.ok) throw new Error(`GET failed: ${res.status}`);
+    animalsCache = await res.json();
 
-  function cardMatches(card, q) {
-    if (!q) return true;
-    const haystack = [
-      card.dataset.name,
-      card.dataset.type,
-      card.dataset.species,
-      card.dataset.summary,
-      card.querySelector('.card-title')?.textContent,
-      card.querySelector('.card-text')?.textContent
-    ].map(norm).join(' ');
-    return haystack.includes(norm(q));
+    renderAnimals(animalsCache);
+
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q && byId("searchInput")) {
+      byId("searchInput").value = q;
+      applySearch();
+    }
+  } catch (err) {
+    showAlert(`Failed to load animals: ${err.message}`, "danger");
+  }
+}
+
+function renderAnimals(listData) {
+  const list = byId("animalList");
+  const noResults = byId("noResults");
+  const count = byId("count");
+  if (!list) return;
+
+  if (count) count.textContent = listData?.length ? `(${listData.length})` : "(0)";
+
+  if (!Array.isArray(listData) || listData.length === 0) {
+    list.innerHTML = `<div class="col-12 text-muted">No animals found. Try adding one.</div>`;
+    if (noResults) noResults.style.display = "block";
+    return;
+  } else if (noResults) {
+    noResults.style.display = "none";
   }
 
-  function applyFilter(query) {
-    let shown = 0;
-    cards.forEach(card => {
-      const match = cardMatches(card, query);
-      card.style.display = match ? '' : 'none';
-      if (match) shown++;
-    });
-    if (empty) empty.style.display = shown === 0 ? '' : 'none';
+  list.innerHTML = listData.map(a => `
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <img src="${a.imageUrl || 'https://placehold.co/600x400?text=No+Image'}" class="card-img-top" alt="${escapeHtml(a.name || 'Animal')}">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">${escapeHtml(a.name)}</h5>
+          <p class="text-muted mb-1">${escapeHtml(a.species || '')}</p>
+          <p class="small flex-grow-1">${escapeHtml(a.description || '')}</p>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-danger btn-sm" onclick="deleteAnimal(${a.id})">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ======= SEARCH =======
+const normalize = s => (s ?? "").toString().toLowerCase();
+function filterAnimals(q) {
+  const query = normalize(q);
+  if (!query) return animalsCache;
+  return animalsCache.filter(a =>
+    normalize(a.name).includes(query) ||
+    normalize(a.species).includes(query) ||
+    normalize(a.description).includes(query)
+  );
+}
+function applySearch() {
+  const q = byId("searchInput")?.value || "";
+  const results = filterAnimals(q);
+
+  const noResults = byId("noResults");
+  if (noResults) noResults.style.display = results.length ? "none" : "block";
+  renderAnimals(results);
+
+  const url = new URL(window.location.href);
+  if (q) url.searchParams.set("q", q); else url.searchParams.delete("q");
+  window.history.replaceState({}, "", url);
+}
+const onSearchInput = debounce(applySearch, 200);
+
+// ======= DELETE =======
+async function deleteAnimal(id) {
+  if (!confirm("Delete this animal?")) return;
+  try {
+    const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error(`DELETE failed: ${res.status}`);
+    showAlert("Animal deleted.");
+    await loadAnimals();
+    applySearch();
+  } catch (err) {
+    showAlert(`Failed to delete: ${err.message}`, "danger");
   }
+}
+window.deleteAnimal = deleteAnimal;
 
-  // keep search in URL (?q=...)
-  function setUrlQuery(query) {
-    const url = new URL(window.location.href);
-    if (norm(query)) url.searchParams.set('q', query);
-    else url.searchParams.delete('q');
-    history.replaceState({}, '', url);
-  }
-  function getUrlQuery() {
-    return new URL(window.location.href).searchParams.get('q') || '';
-  }
+// ======= ADD FORM =======
+function wireAddForm() {
+  const form = byId("addAnimalForm");
+  if (!form) return;
 
-  // Initialize from URL
-  const initial = getUrlQuery();
-  if (initial) input.value = initial;
-  applyFilter(initial);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
 
-  // Live filter while typing
-  input.addEventListener('input', () => {
-    const q = input.value;
-    setUrlQuery(q);
-    applyFilter(q);
-  });
-
-  // Button click
-  button.addEventListener('click', () => {
-    const q = input.value;
-    setUrlQuery(q);
-    applyFilter(q);
-  });
-
-  // Enter key inside input
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const q = input.value;
-      setUrlQuery(q);
-      applyFilter(q);
+    if (!data.name || !data.species) {
+      showAlert("Please provide Name and Species.", "warning");
+      return;
+    }
+    try {
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`POST failed: ${res.status} ${text}`);
+      }
+      showAlert("Animal created successfully!");
+      form.reset();
+      setTimeout(() => (window.location.href = "index.html"), 600);
+    } catch (err) {
+      showAlert(`Failed to create: ${err.message}`, "danger");
     }
   });
+}
+
+// ======= BOOTSTRAP =======
+document.addEventListener("DOMContentLoaded", () => {
+  // On index.html
+  if (byId("animalList")) {
+    const input = byId("searchInput");
+    const searchBtn = byId("searchBtn");
+    const clearBtn = byId("clearBtn");
+
+    if (input) input.addEventListener("input", onSearchInput);
+    if (searchBtn) searchBtn.addEventListener("click", applySearch);
+    if (clearBtn) clearBtn.addEventListener("click", () => { byId("searchInput").value = ""; applySearch(); });
+
+    loadAnimals();
+  }
+  // On new-animal-form.html
+  wireAddForm();
 });
