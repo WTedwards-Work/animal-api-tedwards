@@ -36,6 +36,8 @@ public class BigCat {
 
     private String habitat;
     private Double weightKg;
+    private String imageUrl;
+
 
     public BigCat() {}
 
@@ -70,4 +72,6 @@ public class BigCat {
     public void setHabitat(String habitat) { this.habitat = habitat; }
     public Double getWeightKg() { return weightKg; }
     public void setWeightKg(Double weightKg) { this.weightKg = weightKg; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

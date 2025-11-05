@@ -30,12 +30,13 @@
     <a class="btn btn-outline-secondary" href="/cats">Back to List</a>
   </div>
 
-  <!-- FORM (fields match your BigCat.java) -->
-  <form method="post" action="/cats/new" class="card p-3">
+  <!-- FORM (fields match BigCat.java) -->
+  <form method="post" action="/cats/new" enctype="multipart/form-data" class="card p-3">
     <div class="row g-3">
 
+      <!-- Required by @NotBlank -->
       <div class="col-md-6">
-        <label class="form-label">Common Name</label>
+        <label class="form-label">Common Name <span class="text-danger">*</span></label>
         <input class="form-control" name="commonName" placeholder="Tiger" required>
       </div>
 
@@ -44,9 +45,10 @@
         <input class="form-control" name="scientificName" placeholder="Panthera tigris">
       </div>
 
+      <!-- Required by @NotBlank -->
       <div class="col-md-6">
-        <label class="form-label">Internal Name</label>
-        <input class="form-control" name="name" placeholder="Internal identifier (optional)">
+        <label class="form-label">Internal Name <span class="text-danger">*</span></label>
+        <input class="form-control" name="name" placeholder="Internal identifier (e.g., TIGER_001)" required>
       </div>
 
       <div class="col-md-6">
@@ -54,14 +56,22 @@
         <input class="form-control" name="habitat" placeholder="Tropical forest">
       </div>
 
+      <!-- Use a select so enum binding never fails -->
       <div class="col-md-4">
         <label class="form-label">Conservation Status</label>
-        <input class="form-control" name="conservationStatus" placeholder="EN / VU / NT / LC">
+        <select class="form-select" name="conservationStatus">
+          <option value="VU" selected>VU — Vulnerable</option>
+          <option value="EN">EN — Endangered</option>
+          <option value="NT">NT — Near Threatened</option>
+          <option value="LC">LC — Least Concern</option>
+        </select>
+        <div class="form-text">Must match enum values (EN, VU, NT, LC).</div>
       </div>
 
+      <!-- Required by @NotNull (use wrapper Double) -->
       <div class="col-md-4">
-        <label class="form-label">Age</label>
-        <input class="form-control" name="age" type="number" min="0" step="0.1" placeholder="5.0">
+        <label class="form-label">Age <span class="text-danger">*</span></label>
+        <input class="form-control" name="age" type="number" min="0" step="0.1" placeholder="5.0" required>
       </div>
 
       <div class="col-md-4">
@@ -69,9 +79,17 @@
         <input class="form-control" name="weightKg" type="number" min="0" step="0.1" placeholder="220.5">
       </div>
 
+      <!-- Required by @NotBlank -->
       <div class="col-12">
-        <label class="form-label">Description</label>
-        <textarea class="form-control" name="description" rows="4" placeholder="Short description..."></textarea>
+        <label class="form-label">Description <span class="text-danger">*</span></label>
+        <textarea class="form-control" name="description" rows="4" placeholder="Short description..." required></textarea>
+      </div>
+
+      <!-- Image upload (optional) -->
+      <div class="col-12">
+        <label class="form-label">Image (optional)</label>
+        <input class="form-control" type="file" name="image" accept="image/*">
+        <div class="form-text">Choose a JPG or PNG from your computer.</div>
       </div>
 
     </div>
