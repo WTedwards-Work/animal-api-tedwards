@@ -6,15 +6,13 @@ Stores data in **Neon (PostgreSQL)**, renders pages with **FreeMarker**, and sup
 
 ---
 
-## Demo Videos (UNCG access required)
+## Demo Videos
 
 - **FIXED CRUD Demo (A3)**  
   [Watch on OneDrive (UNCG sign-in)](https://uncg-my.sharepoint.com/:v:/g/personal/wtedwards_uncg_edu/Eb0LKHhllthMoHGH4v7_xA8Bsf9-hAeMk7fKR6v2pDAzBw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=3LJ61e)
 
 - **MVC Demo (A4)**  
   [Watch on OneDrive (UNCG sign-in)](https://uncg-my.sharepoint.com/:v:/g/personal/wtedwards_uncg_edu/ERAuSRMQItBFnZDeFcYAKMsBqdlIGOON5JQy7nAmWhnpqg?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=11CWQe)
-
-> **Note:** Links are restricted to **“People in UNCG with the link.”** If you can’t open them, sign in with your UNCG account.
 
 ---
 
@@ -56,7 +54,7 @@ src/main/resources/
 │   ├── animal-create.ftlh
 │   └── animal-update.ftlh
 └── static/
-└── assets/ (css/js for the static site bits if any remain)
+└── assets/ 
 
 ````
 
