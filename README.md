@@ -1,57 +1,152 @@
-# animal-api-tedwards
-RESTful API for my animal website CSC 340 Assignment 3
-by William Taylor Edwards
-## FIXED CRUD Demo
-Click below to view the demo video:  
-https://uncg-my.sharepoint.com/:v:/g/personal/wtedwards_uncg_edu/Eb0LKHhllthMoHGH4v7_xA8Bsf9-hAeMk7fKR6v2pDAzBw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=3LJ61e
+```markdown
+# Animal API / MVC — CSC 340 (William Taylor Edwards)
 
-## MVC DEMO (NEW) 
-click below to view the demo video:
-https://uncg-my.sharepoint.com/:v:/g/personal/wtedwards_uncg_edu/ERAuSRMQItBFnZDeFcYAKMsBqdlIGOON5JQy7nAmWhnpqg?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=11CWQe
+Full-stack **Spring Boot MVC** app built on top of my Assignment 3 CRUD API.  
+Stores data in **Neon (PostgreSQL)**, renders pages with **FreeMarker**, and supports **image uploads**.
 
-## Installation
+---
 
-1. Clone this repository:  
-   ```bash
-   git clone https://github.com/WTedwards-Work/animal-api-tedwards.git
-   cd animal-api-tedwards
-   ```
+## Demo Videos (UNCG access required)
 
-2. Make sure you have Java 17 and Maven installed.
+- **FIXED CRUD Demo (A3)**  
+  [Watch on OneDrive (UNCG sign-in)](https://uncg-my.sharepoint.com/:v:/g/personal/wtedwards_uncg_edu/Eb0LKHhllthMoHGH4v7_xA8Bsf9-hAeMk7fKR6v2pDAzBw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=3LJ61e)
 
-3. Configure your application.properties file:  
-   ```properties
-   spring.datasource.url=jdbc:postgresql://ep-summer-hill-ad0fdvon-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
-   spring.datasource.username=neondb_owner
-   spring.datasource.password=your_password_here
-   spring.jpa.hibernate.ddl-auto=update
-   spring.jpa.show-sql=true
-   ```
+- **MVC Demo (A4)**  
+  [Watch on OneDrive (UNCG sign-in)](https://uncg-my.sharepoint.com/:v:/g/personal/wtedwards_uncg_edu/ERAuSRMQItBFnZDeFcYAKMsBqdlIGOON5JQy7nAmWhnpqg?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=11CWQe)
 
-4. Run the application:  
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+> **Note:** Links are restricted to **“People in UNCG with the link.”** If you can’t open them, sign in with your UNCG account.
 
-5. The API will start on http://localhost:8080
+---
 
------------------------------------------------------------------------------------------------------------
+## Overview
 
-## Endpoints
+- **API (A3):** RESTful CRUD for `BigCat` entities.
+- **MVC (A4):** Server-rendered pages (`/cats`, `/cats/new`, etc.) with FreeMarker.
+- **Database:** Neon (PostgreSQL) — Hibernate auto-creates/updates schema.
+- **Images:** Users can upload images; files saved to a local `uploads/` folder, served at `/images/**`.
 
-|  Method |   Endpoint   |   Description   |
-|---------|--------------------------------------|--------------------------------------------------------|
-| GET     | /api/bigcats                         | Retrieve all big cats |
-| GET     | /api/bigcats/{id}                    | Retrieve a big cat by its ID |
-| POST    | /api/bigcats                         | Add a new big cat     |
-| PUT     | /api/bigcats/{id}                    | Update an existing big cat |
-| DELETE  | /api/bigcats/{id}                    | Delete a big cat by ID |
-| GET     | /api/bigcats/category/{commonName}   | Retrieve all big cats by category (e.g., species) |
-| GET     | /api/bigcats/search?name={substring} | Search for big cats by partial name |
+---
 
-----------------------------------------------------------------------------------------------------------
+## Tech Stack
 
-## Example JSON (for POST / PUT requests)
+- Java 17, Spring Boot 3.5.6  
+- Spring MVC, Spring Data JPA, FreeMarker  
+- PostgreSQL on **Neon**  
+- Bootstrap 5  
+
+---
+
+## Project Structure (key parts)
+
+```
+
+src/main/java/edu/uncg/bigAnimals_api/
+├── BigCat.java                  # Entity (@Table("big_cats"))
+├── BigCatRepository.java        # JPA Repository
+├── BigCatService.java           # Service (CRUD)
+├── BigCatController.java        # REST API (/api/bigcats/*)
+├── BigCatMvcController.java     # MVC pages (/cats/*), handles image upload
+├── RootController.java          # "/" to redirect:/cats
+└── WebConfig.java               # /images/** to local /uploads
+
+src/main/resources/
+├── templates/
+│   ├── animal-list.ftlh
+│   ├── animal-details.ftlh
+│   ├── animal-create.ftlh
+│   └── animal-update.ftlh
+└── static/
+└── assets/ (css/js for the static site bits if any remain)
+
+````
+
+---
+
+## Setup & Run
+
+### 1) Clone
+```bash
+git clone https://github.com/WTedwards-Work/animal-api-tedwards.git
+cd animal-api-tedwards
+````
+
+### 2) Configure database (`src/main/resources/application.properties`)
+
+```properties
+spring.datasource.url=jdbc:postgresql://ep-summer-hill-ad0fdvon-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+spring.datasource.username=neondb_owner
+spring.datasource.password=REPLACE_ME
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# (optional) allow larger uploads
+spring.servlet.multipart.max-file-size=15MB
+spring.servlet.multipart.max-request-size=15MB
+```
+
+### 3) Run
+
+```bash
+.\mvnw.cmd spring-boot:run   # Windows PowerShell
+# or
+./mvnw spring-boot:run       # macOS/Linux
+```
+
+* App: [http://localhost:8080](http://localhost:8080)
+* Main page: [http://localhost:8080/cats](http://localhost:8080/cats)
+
+---
+
+## Image Uploads
+
+* Forms (`create` / `update`) include `enctype="multipart/form-data"` and `<input type="file" name="image">`
+* Controller saves files to a local `uploads/` folder and sets `imageUrl` to `/images/<uuid>.ext`
+* `WebConfig` maps `/images/**` → `uploads/` on disk
+
+**Tip:** Ignore uploads in Git
+
+```
+# .gitignore
+/uploads/
+```
+
+---
+
+## Data Model (`BigCat`)
+
+Fields: `bigCatId (PK)`, `name*`, `description*`, `commonName*`, `scientificName`,
+`conservationStatus (EN|VU|NT|LC)`, `age*`, `habitat`, `weightKg`, `imageUrl`
+(* required via validation)
+
+---
+
+## MVC Routes
+
+| URL                 | View / Action           |
+| ------------------- | ----------------------- |
+| `/`                 | redirect to `/cats`      |
+| `/cats`             | List (animal-list.ftlh) |
+| `/cats/new`         | Create form             |
+| `/cats/{id}`        | Details                 |
+| `/cats/update/{id}` | Update form             |
+| `/cats/delete/{id}` | Delete + redirect       |
+
+---
+
+## REST API (A3)
+
+| Method | Endpoint                             | Description             |
+| -----: | ------------------------------------ | ----------------------- |
+|    GET | `/api/bigcats`                       | Get all big cats        |
+|    GET | `/api/bigcats/{id}`                  | Get by ID               |
+|   POST | `/api/bigcats`                       | Create                  |
+|    PUT | `/api/bigcats/{id}`                  | Update                  |
+| DELETE | `/api/bigcats/{id}`                  | Delete                  |
+|    GET | `/api/bigcats/category/{commonName}` | Get by category/species |
+|    GET | `/api/bigcats/search?name=abc`       | Search by partial name  |
+
+**Example JSON (POST/PUT)**
+
 ```json
 {
   "name": "Dave",
@@ -63,11 +158,18 @@ https://uncg-my.sharepoint.com/:v:/g/personal/wtedwards_uncg_edu/ERAuSRMQItBFnZD
   "habitat": "North Carolina Zoo",
   "weightKg": 192.3
 }
-`````````````````````````````````````````````````````````````````````````````````````````````````````````
+```
 
-## Technologies Used
-- Java 17
-- Spring Boot 3.5.6
-- Spring Data JPA
-- PostgreSQL (NeonDB)
-- Thunder Client (for API testing)
+---
+
+## Neon (PostgreSQL)
+
+Useful queries for verification/demo:
+
+```sql
+SELECT * FROM public.big_cats ORDER BY big_cat_id DESC LIMIT 10;
+SELECT COUNT(*) FROM public.big_cats;
+SELECT DISTINCT conservation_status FROM public.big_cats;
+```
+
+---
